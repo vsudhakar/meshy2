@@ -33,19 +33,20 @@ class networkDevice:
         while True:
             # Test simulation
             self.y += self.direction
-            print "X is %d" % self.x
-            print "Y is %d" % self.y
+            #print "X is %d" % self.x
+            #print "Y is %d" % self.y
             loc = (self.id, self.x, self.y)
-            self.eventBuffer.updateLocation(loc)
+
 
             self.search()
 
-            print "Neighbors"
-            for i in self.neighbors:
-                print i
-            print "---------"
+            if len(self.neighbors) > 0:
+                print str(self.id) + " Neighbors @ " + str(self.env.now)
+                for i in self.neighbors:
+                    print i
+                print "---------"
 
-            yield self.env.timeout(2)
+            yield self.env.timeout(1)
 
     def search(self):
         # Clear previous neighbors
@@ -55,7 +56,15 @@ class networkDevice:
             x, y = i[1], i[2]
             radius = 2
             distance = (((x-self.x)**2)+((y-self.y)**2))**0.5
+
             if distance <= radius and i[0] != self.id:
                 self.neighbors.append(i[0])
 
+        # Call flush if last device
+        if self.id == self.eventBuffer.numOfDevices-1:
+            self.eventBuffer.next()
+
+        loc = (self.id, self.x, self.y)
+
+        self.eventBuffer.updateLocation(loc)
 
