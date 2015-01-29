@@ -27,15 +27,16 @@ class networkDevice:
         self.neighbors = []
 
         # Simpy init methods
-        self.action = env.process(self.run())
+        self.action = env.process(self.run)
 
+    @property
     def run(self):
         while True:
             # Test simulation
-            self.y += self.direction
+            #self.y += self.direction
             #print "X is %d" % self.x
             #print "Y is %d" % self.y
-            loc = (self.id, self.x, self.y)
+            #loc = (self.id, self.x, self.y)
 
 
             self.search()
@@ -45,6 +46,10 @@ class networkDevice:
                 for i in self.neighbors:
                     print i
                 print "---------"
+
+            # if self.id == self.eventBuffer.numOfDevices-1:
+            #     print "Device Id: " + str(self.id)
+            #     print "Time: " + str(self.env.now)
 
             yield self.env.timeout(1)
 
@@ -64,7 +69,11 @@ class networkDevice:
         if self.id == self.eventBuffer.numOfDevices-1:
             self.eventBuffer.next()
 
-        loc = (self.id, self.x, self.y)
+        # loc = (self.id, self.x, self.y)
+        #
+        # self.eventBuffer.updateLocation(loc)
 
+        mobilityLoc = self.eventBuffer.getThisLocation(self.id)
+        loc = (self.id, mobilityLoc[0], mobilityLoc[1])
         self.eventBuffer.updateLocation(loc)
 

@@ -8,10 +8,21 @@ from networkDevice import *
 from eventBuffer import *
 
 # Simulation
+n = 20
+dim = (100, 100)
+
 env = simpy.Environment()
-eb = eventBuffer(env, 2)
+eb = eventBuffer(env, n, dim)
 
-d1 = networkDevice(0, "HELLOWORLD", env, eb)
-d2 = networkDevice(1, "HELLOUNIVERSE", env, eb, direction=-1, y=50)
+devices = []
 
-env.run(until=70)
+# Populate device array
+# for i in range(0, 10):
+#     devices.append(networkDevice(i, "HelloWorld", env, eb))
+#
+# for i in range(10, 20):
+#     devices.append(networkDevice(i, "HelloWorld", env, eb, direction=-1, y = 50))
+for i in range(0, n):
+    devices.append(networkDevice(i, "HelloWorld", env, eb))
+
+env.run(until=700)
