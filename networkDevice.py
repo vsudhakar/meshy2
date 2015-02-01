@@ -6,7 +6,7 @@
 #Main node class
 
 class networkDevice:
-    def __init__(self, deviceID, verificationCode, env, eventBuffer, direction=1, x=0, y=0):
+    def __init__(self, deviceID, verificationCode, env, eventBuffer, locationProvider, direction=1, x=0, y=0):
         # Parameters
         # deviceID - Number assigned by simulation in place of device/user identification string
         # verificationCode - String used to ensure successful decryption of message
@@ -23,11 +23,15 @@ class networkDevice:
         # TEST ONLY - DEFINE DIRECTION
         self.direction = direction
 
+        # Location provider object
+        self.locProv = locationProvider
+
         # Neighboring device array
         self.neighbors = []
 
         # Simpy init methods
         self.action = env.process(self.run)
+
 
     @property
     def run(self):
@@ -39,19 +43,31 @@ class networkDevice:
             #loc = (self.id, self.x, self.y)
 
 
-            self.search()
-
-            if len(self.neighbors) > 0:
-                print str(self.id) + " Neighbors @ " + str(self.env.now)
-                for i in self.neighbors:
-                    print i
-                print "---------"
-
+            # self.search()
+            #
+            # if len(self.neighbors) > 0:
+            #     print str(self.id) + " Neighbors @ " + str(self.env.now)
+            #     for i in self.neighbors:
+            #         print i
+            #     print "---------"
+            #
             # if self.id == self.eventBuffer.numOfDevices-1:
             #     print "Device Id: " + str(self.id)
             #     print "Time: " + str(self.env.now)
+            # else:
+            #     print "WOGAY SIR: " + str(self.eventBuffer.numOfDevices-self.id-1) + " to go!"
+
+            self.coordinates = self.locProv.getCoordinates(self.loc)
+
+            print "Current coordinates of device " + str(self.id) + " are " + str(self.coordinates)
 
             yield self.env.timeout(1)
+
+    # @property
+    # def run(self):
+    #     while True:
+    #         yield self.env.timeout(i)
+
 
     def search(self):
         # Clear previous neighbors
@@ -77,3 +93,5 @@ class networkDevice:
         loc = (self.id, mobilityLoc[0], mobilityLoc[1])
         self.eventBuffer.updateLocation(loc)
 
+    def setLoc(self, index):
+        self.loc = index
